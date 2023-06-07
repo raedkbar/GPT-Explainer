@@ -26,6 +26,20 @@ class OpenAIError(Exception):
 
 
 async def process_slide(slide_num, slide_text, retry_count=1):
+    """
+    Processes a slide by generating an explanation using OpenAI's ChatCompletion model.
+
+    Args:
+        slide_num (int): The slide number.
+        slide_text (str): The text content of the slide.
+        retry_count (int): The number of times the slide processing has been retried (default: 1).
+
+    Returns:
+        str: The generated explanation for the slide.
+
+    Raises:
+        SlideProcessingError: If the slide processing fails after the maximum number of retries.
+    """
     try:
         print(f"Processing slide {slide_num}...\n")
         prompt = f"{PROMPT_INIT}\n{slide_text}\n"
@@ -48,6 +62,15 @@ async def process_slide(slide_num, slide_text, retry_count=1):
 
 
 def extract_slide_text(slide):
+    """
+    Extracts the text content from a slide.
+
+    Args:
+        slide: The slide object.
+
+    Returns:
+        str: The extracted text content of the slide.
+    """
     slide_text = ""
     for shape in slide.shapes:
         if shape.has_text_frame:
@@ -58,6 +81,18 @@ def extract_slide_text(slide):
 
 
 async def process_presentation(presentation_path):
+    """
+    Processes a PowerPoint presentation by extracting slide texts and generating explanations for each slide.
+
+    Args:
+        presentation_path (str): The path to the PowerPoint presentation file.
+
+    Returns:
+        list: A list of dictionaries containing the slide number and its corresponding explanation.
+
+    Raises:
+        PresentationProcessingError: If the presentation processing fails.
+    """
     try:
         presentation = pptx.Presentation(presentation_path)
         slides = [extract_slide_text(slide) for slide in presentation.slides]
@@ -78,6 +113,12 @@ async def process_presentation(presentation_path):
 
 
 async def main(presentation_path):
+    """
+    Main function to process the PowerPoint presentation and save the explanations to a JSON file.
+
+    Args:
+        presentation_path (str): The path to the PowerPoint presentation file.
+    """
     try:
         output_file = os.path.splitext(presentation_path)[0] + ".json"
 
