@@ -3,6 +3,7 @@ import os
 import json
 import pptx
 import openai
+import argparse
 
 API_KEY = "API_KEY"
 PROMPT_INIT = "Explain the content of the following slide. " \
@@ -76,9 +77,8 @@ async def process_presentation(presentation_path):
         raise PresentationProcessingError(f"Failed to process presentation: {str(e)}") from e
 
 
-async def main():
+async def main(presentation_path):
     try:
-        presentation_path = "/path/to/your/presentation.pptx"
         output_file = os.path.splitext(presentation_path)[0] + ".json"
 
         openai.api_key = API_KEY
@@ -97,5 +97,8 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
-    
+    parser = argparse.ArgumentParser(description="Process PowerPoint presentation slides.")
+    parser.add_argument("presentation_path", type=str, help="Path to the PowerPoint presentation file.")
+    args = parser.parse_args()
+
+    asyncio.run(main(args.presentation_path))
