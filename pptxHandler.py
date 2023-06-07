@@ -4,14 +4,25 @@ import json
 import pptx
 import openai
 
+API_KEY = "API_KEY"
+PROMPT_INIT = "Explain the content of the following slide. Write a response as if you were writing an article:"
+
 
 async def process_slide(slide_text):
-    prompt = f"Explain the content of the slide:\n{slide_text}\n"
-    response = await openai.Completion.create(
+    print("Slide text:", slide_text)
+    prompt = f"{PROMPT_INIT}\n{slide_text}\n"
+    print("Generated prompt:", prompt)
+
+    response = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo",
-        prompt=prompt,
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that explains PowerPoint slides:"},
+            {"role": "user", "content": prompt}
+        ]
     )
-    explanation = response.choices[0].text.strip()
+
+    explanation = response.choices[0].message.content
+    print(str(explanation))
     return explanation
 
 
@@ -29,6 +40,8 @@ async def process_presentation(presentation_path):
                         slide_text += run.text
 
         slides.append(slide_text.strip())
+
+    print("Extracted slide texts:", slides)
 
     explanations = []
 
@@ -49,7 +62,7 @@ async def main():
     presentation_path = "presentation.pptx"
     output_file = os.path.splitext(presentation_path)[0] + ".json"
 
-    openai.api_key = "API_KEY"
+    openai.api_key = API_KEY
 
     explanations = await process_presentation(presentation_path)
 
