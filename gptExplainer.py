@@ -1,9 +1,9 @@
-import asyncio
-import os
 import json
-import pptx
+import os
+import asyncio
 import openai
-import argparse
+import pptx
+
 
 API_KEY = "API_KEY"
 PROMPT_INIT = "Explain the content of the following slide. " \
@@ -11,6 +11,8 @@ PROMPT_INIT = "Explain the content of the following slide. " \
               "Meaning, don't mention the words slide or presentation:"
 TIMEOUT_SECONDS = 30  # Timeout value in seconds
 MAX_RETRIES = 3  # Maximum number of retries for slide processing
+UPLOADS_DIR = "/path/to/uploads"
+OUTPUTS_DIR = "/path/to/outputs"
 
 
 class SlideProcessingError(Exception):
@@ -112,34 +114,50 @@ async def process_presentation(presentation_path):
         raise PresentationProcessingError(f"Failed to process presentation: {str(e)}") from e
 
 
-async def main(presentation_path):
+async def process_file(file_path):
     """
-    Main function to process the PowerPoint presentation and save the explanations to a JSON file.
+    Processes a file by generating explanations for each slide in the PowerPoint presentation.
 
     Args:
-        presentation_path (str): The path to the PowerPoint presentation file.
+        file_path (str): The path to the PowerPoint presentation file.
     """
     try:
-        output_file = os.path.splitext(presentation_path)[0] + ".json"
+        output_file = os.path.join(OUTPUTS_DIR, os.path.splitext(os.path.basename(file_path))[0] + ".json")
 
         openai.api_key = API_KEY
 
-        print("Processing file...\n")
+        print(f"Processing file: {file_path}\n")
 
-        explanations = await process_presentation(presentation_path)
+        explanations = await process_presentation(file_path)
 
         # Save explanations to a JSON file
         with open(output_file, "w") as f:
             json.dump(explanations, f, indent=4)
 
-        print("Explanations saved successfully.")
+        print(f"Explanations saved successfully for file: {file_path}")
     except (OpenAIError, PresentationProcessingError, SlideProcessingError) as e:
-        print(f"Error occurred: {str(e)}")
+        print(f"Error occurred while processing file {file_path}: {str(e)}")
+
+
+async def process_uploads_folder():
+    """
+    Processes the files in the 'uploads' folder and generates explanations for each PowerPoint presentation.
+
+    The function runs indefinitely, scanning the 'uploads' folder every few seconds and processing new files.
+    """
+    while True:
+        print("Scanning uploads folder...\n")
+        files = os.listdir(UPLOADS_DIR)
+
+        for file in files:
+            file_path = os.path.join(UPLOADS_DIR, file)
+            if file.endswith(".pptx") and not file.startswith("processed_"):
+                await process_file(file_path)
+                os.rename(file_path, os.path.join(UPLOADS_DIR, "processed_" + file))
+
+        print("Sleeping for 10 seconds...\n")
+        await asyncio.sleep(10)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process PowerPoint presentation slides.")
-    parser.add_argument("presentation_path", type=str, help="Path to the PowerPoint presentation file.")
-    args = parser.parse_args()
-
-    asyncio.run(main(args.presentation_path))
+    asyncio.run(process_uploads_folder())
