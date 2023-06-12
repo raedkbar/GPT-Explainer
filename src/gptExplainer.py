@@ -5,14 +5,14 @@ import openai
 import pptx
 
 
-API_KEY = "API_KEY"
+API_KEY = "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"
 PROMPT_INIT = "Explain the content of the following slide. " \
               "Write a response as if you were writing an article, and don't break the fourth wall! " \
               "Meaning, don't mention the words slide or presentation:"
 TIMEOUT_SECONDS = 30  # Timeout value in seconds
 MAX_RETRIES = 3  # Maximum number of retries for slide processing
-UPLOADS_DIR = "/path/to/uploads"
-OUTPUTS_DIR = "/path/to/outputs"
+UPLOADS_DIR = "./uploads"
+OUTPUTS_DIR = "./outputs"
 
 
 class SlideProcessingError(Exception):

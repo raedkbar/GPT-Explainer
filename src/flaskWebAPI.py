@@ -5,10 +5,11 @@ import uuid
 from datetime import datetime
 from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
+from pathlib import Path
 
 app = Flask(__name__)
-UPLOADS_DIR = "uploads"
-OUTPUTS_DIR = "outputs"
+UPLOADS_DIR = "./uploads"
+OUTPUTS_DIR = "./outputs"
 
 
 @app.route("/upload", methods=["POST"])
@@ -29,7 +30,8 @@ def upload_file():
 
     # Create the filename with original filename, timestamp, and UID
     filename = secure_filename(file.filename)
-    new_filename = f"{filename}_{timestamp}_{uid}"
+    name, extension = filename.split('.')
+    new_filename = f"{name}_{timestamp}_{uid}.{extension}"
 
     # Save the file to the uploads folder
     file.save(os.path.join(UPLOADS_DIR, new_filename))
@@ -40,27 +42,35 @@ def upload_file():
 @app.route("/status/<uid>", methods=["GET"])
 def get_status(uid):
     # Check if the upload exists
-    upload_path = os.path.join(UPLOADS_DIR, f"*_{uid}")
+    upload_path = os.path.join(UPLOADS_DIR, f"*_{uid}.*")
     matching_uploads = glob.glob(upload_path)
 
     if len(matching_uploads) == 0:
         return jsonify({"status": "not found"}), 404
 
     upload_filename = os.path.basename(matching_uploads[0])
-    timestamp = upload_filename.split("_")[1]
+    timestamp = upload_filename.split("_")[-2]
 
-    output_path = os.path.join(OUTPUTS_DIR, f"{upload_filename}.json")
+    stripped_string = upload_filename.split("_", 1)[1]
+
+    output_path = Path(OUTPUTS_DIR) / f"{stripped_string.split('.')[0]}.json"
+    output_path = output_path.resolve()
+    print(output_path)
 
     # Check if the output file exists
-    if os.path.exists(output_path):
+    if output_path.exists():
         with open(output_path, "r") as f:
             output_data = json.load(f)
 
+        # extract all slides explanation
+        explanation = ''.join(slide["explanation"] for slide in output_data)
+
+        print(output_data)
         return jsonify({
             "status": "done",
             "filename": upload_filename,
             "timestamp": timestamp,
-            "explanation": output_data
+            "explanation": explanation
         })
 
     return jsonify({
