@@ -55,7 +55,6 @@ def get_status(uid):
 
     output_path = Path(OUTPUTS_DIR) / f"{stripped_string.split('.')[0]}.json"
     output_path = output_path.resolve()
-    print(output_path)
 
     # Check if the output file exists
     if output_path.exists():
@@ -65,7 +64,6 @@ def get_status(uid):
         # extract all slides explanation
         explanation = ''.join(slide["explanation"] for slide in output_data)
 
-        print(output_data)
         return jsonify({
             "status": "done",
             "filename": upload_filename,
