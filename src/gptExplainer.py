@@ -5,7 +5,7 @@ import openai
 import pptx
 
 
-API_KEY = "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"
+API_KEY = "API_KEY"
 PROMPT_INIT = "Explain the content of the following slide. " \
               "Write a response as if you were writing an article, and don't break the fourth wall! " \
               "Meaning, don't mention the words slide or presentation:"
@@ -60,7 +60,7 @@ async def process_slide(slide_num, slide_text, retry_count=1):
             print(f"Retrying to process slide {slide_num}. Retry count: {retry_count + 1}\n")
             return await process_slide(slide_num, slide_text, retry_count=retry_count + 1)
         else:
-            raise SlideProcessingError(f"Failed to process slide after {MAX_RETRIES} retries: {str(e)}") from e
+            raise SlideProcessingError(f"Failed to process slide {slide_num} after {MAX_RETRIES} retries: {str(e)}") from e
 
 
 def extract_slide_text(slide):

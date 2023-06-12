@@ -11,9 +11,22 @@ app = Flask(__name__)
 UPLOADS_DIR = "./uploads"
 OUTPUTS_DIR = "./outputs"
 
+# Create the upload and output directories if they don't exist
+os.makedirs(UPLOADS_DIR, exist_ok=True)
+os.makedirs(OUTPUTS_DIR, exist_ok=True)
+
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
+    """
+    Uploads a file to the server.
+
+    Args:
+        None (request is accessed directly)
+
+    Returns:
+        JSON response with UID if successful, error message otherwise
+    """
     if "file" not in request.files:
         return jsonify({"error": "No file provided"}), 400
 
@@ -30,7 +43,7 @@ def upload_file():
 
     # Create the filename with original filename, timestamp, and UID
     filename = secure_filename(file.filename)
-    name, extension = filename.split('.')
+    name, extension = filename.rsplit('.', 1)
     new_filename = f"{name}_{timestamp}_{uid}.{extension}"
 
     # Save the file to the uploads folder
@@ -41,6 +54,15 @@ def upload_file():
 
 @app.route("/status/<uid>", methods=["GET"])
 def get_status(uid):
+    """
+    Retrieves the status of an upload.
+
+    Args:
+        uid (str): The unique identifier for the upload
+
+    Returns:
+        JSON response with the status, filename, timestamp, and explanation
+    """
     # Check if the upload exists
     upload_path = os.path.join(UPLOADS_DIR, f"*_{uid}.*")
     matching_uploads = glob.glob(upload_path)
@@ -61,7 +83,7 @@ def get_status(uid):
         with open(output_path, "r") as f:
             output_data = json.load(f)
 
-        # extract all slides explanation
+        # Extract all slides explanation
         explanation = ''.join(slide["explanation"] for slide in output_data)
 
         return jsonify({
@@ -80,6 +102,4 @@ def get_status(uid):
 
 
 if __name__ == "__main__":
-    os.makedirs(UPLOADS_DIR, exist_ok=True)
-    os.makedirs(OUTPUTS_DIR, exist_ok=True)
     app.run()
