@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Program README</title>
-</head>
 <body>
-  <h1>Program README</h1>
+  <h1>The GPT-Explainer Project</h1>
   <p>This program consists of four Python scripts that work together to provide functionality for processing PowerPoint presentations and generating explanations for each slide. The scripts include:</p>
   <ol>
     <li><code>gptExplainer.py</code>: This script contains functions for processing individual slides, processing the entire presentation, and handling file uploads. It uses OpenAI's ChatCompletion model to generate explanations for the slides. The explanations are then saved to a JSON file.</li>
