@@ -1,5 +1,6 @@
+# Ignore .pptx and .json files
+*.pptx
+*.json
+
 # Ignore venv folder
 venv/
-
-# Ignore idea folder
-.idea
