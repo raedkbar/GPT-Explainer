@@ -2,13 +2,14 @@ import openai
 
 from src.explainer.exceptions import SlideProcessingError
 
-API_KEY = "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"
+API_KEY = "API_KEY"
 PROMPT_INIT = "Explain the content of the following slide. " \
               "Write a response as if you were writing an article, and don't break the fourth wall! " \
               "Meaning, don't mention the words slide or presentation:"
 MODEL_VERSION = "gpt-3.5-turbo"
-TIMEOUT_SECONDS = 30  # Timeout value in seconds
 MAX_RETRIES = 3  # Maximum number of retries for slide processing
+UPLOADS_DIR = "../uploads"
+OUTPUTS_DIR = "../outputs"
 
 
 async def process_slide(slide_num, slide_text, retry_count=1):
@@ -27,6 +28,7 @@ async def process_slide(slide_num, slide_text, retry_count=1):
         SlideProcessingError: If the slide processing fails after the maximum number of retries.
     """
     try:
+        openai.api_key = API_KEY
         print(f"Processing slide {slide_num}...\n")
         prompt = f"{PROMPT_INIT}\n{slide_text}\n"
         response = await openai.ChatCompletion.acreate(

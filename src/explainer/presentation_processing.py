@@ -1,8 +1,18 @@
 import asyncio
+import json
+import os
 import pptx
+from datetime import datetime
 
+from src.db_session import create_session
 from src.explainer.exceptions import PresentationProcessingError
 from src.explainer.gpt_processing import process_slide
+from src.models import Upload
+
+UPLOADS_DIR = "../uploads"
+OUTPUTS_DIR = "../outputs"
+
+session = create_session()
 
 
 async def extract_slide_text(slide):
@@ -24,20 +34,24 @@ async def extract_slide_text(slide):
     return slide_text.strip()
 
 
-async def process_presentation(presentation_path):
+async def process_presentation(upload_id):
     """
     Processes a PowerPoint presentation by extracting slide texts and generating explanations for each slide.
 
     Args:
-        presentation_path (str): The path to the PowerPoint presentation file.
-
-    Returns:
-        list: A list of dictionaries containing the slide number and its corresponding explanation.
+        upload_id (int): The ID of the upload record.
 
     Raises:
         PresentationProcessingError: If the presentation processing fails.
     """
     try:
+        upload = session.get(Upload, upload_id)
+
+        if upload is None:
+            print(f"Upload with ID '{upload_id}' not found")
+            return
+
+        presentation_path = f"{UPLOADS_DIR}/{upload.uid}.pptx"
         presentation = pptx.Presentation(presentation_path)
         slides = [await extract_slide_text(slide) for slide in presentation.slides]
 
@@ -54,6 +68,18 @@ async def process_presentation(presentation_path):
         for i, explanation in enumerate(results, start=1):
             explanations.append({"slide": i, "explanation": explanation})
 
-        return explanations
+        output_file = os.path.join(OUTPUTS_DIR, os.path.splitext(os.path.basename(upload.uid))[0] + ".json")
+
+        # output_file = os.path.join(OUTPUTS_DIR, f"{upload.uid}.json")
+        # Save explanations to a JSON file
+        with open(output_file, "w") as f:
+            json.dump(explanations, f, indent=4)
+
+        # Update the upload record with explanations and finish time
+        upload.status = "completed"
+        upload.finish_time = datetime.now()
+        session.commit()
+
+        print(f"Explanations saved successfully for upload ID: {upload_id}")
     except Exception as e:
         raise PresentationProcessingError(str(e)) from e
