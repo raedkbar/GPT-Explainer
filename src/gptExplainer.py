@@ -17,15 +17,22 @@ OUTPUTS_DIR = "../outputs"
 
 
 class SlideProcessingError(Exception):
-    pass
+    def __init__(self, slide_num, message):
+        self.slide_num = slide_num
+        self.message = message
+        super().__init__(f"Error occurred while processing slide {slide_num}: {message}")
 
 
 class PresentationProcessingError(Exception):
-    pass
+    def __init__(self, message):
+        self.message = message
+        super().__init__(f"Failed to process presentation: {message}")
 
 
 class OpenAIError(Exception):
-    pass
+    def __init__(self, message):
+        self.message = message
+        super().__init__(f"OpenAI error occurred: {message}")
 
 
 async def process_slide(slide_num, slide_text, retry_count=1):
@@ -61,7 +68,7 @@ async def process_slide(slide_num, slide_text, retry_count=1):
             print(f"Retrying to process slide {slide_num}. Retry count: {retry_count + 1}\n")
             return await process_slide(slide_num, slide_text, retry_count=retry_count + 1)
         else:
-            raise SlideProcessingError(f"Failed to process slide {slide_num} after {MAX_RETRIES} retries: {str(e)}") from e
+            raise SlideProcessingError(slide_num, str(e)) from e
 
 
 def extract_slide_text(slide):
@@ -115,7 +122,7 @@ async def process_presentation(presentation_path):
 
         return explanations
     except Exception as e:
-        raise PresentationProcessingError(f"Failed to process presentation: {str(e)}") from e
+        raise PresentationProcessingError(str(e)) from e
 
 
 async def process_file(file_path):
@@ -139,8 +146,12 @@ async def process_file(file_path):
             json.dump(explanations, f, indent=4)
 
         print(f"Explanations saved successfully for file: {file_path}")
-    except (OpenAIError, PresentationProcessingError, SlideProcessingError) as e:
-        print(f"Error occurred while processing file {file_path}: {str(e)}")
+    except OpenAIError as e:
+        print(f"OpenAI error occurred while processing file {file_path}: {str(e)}")
+    except PresentationProcessingError as e:
+        print(f"Presentation processing error occurred while processing file {file_path}: {str(e)}")
+    except SlideProcessingError as e:
+        print(f"Slide processing error occurred while processing file {file_path}, slide {e.slide_num}: {str(e.message)}")
 
 
 async def process_uploads_folder():
