@@ -1,7 +1,8 @@
 import asyncio
 import pptx
-from gpt_processing import process_slide
-from exceptions import PresentationProcessingError
+
+from src.explainer.exceptions import PresentationProcessingError
+from src.explainer.gpt_processing import process_slide
 
 
 async def extract_slide_text(slide):

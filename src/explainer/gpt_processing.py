@@ -1,6 +1,6 @@
 import openai
-from exceptions import SlideProcessingError
 
+from src.explainer.exceptions import SlideProcessingError
 
 API_KEY = "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"
 PROMPT_INIT = "Explain the content of the following slide. " \

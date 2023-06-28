@@ -3,11 +3,11 @@ import os
 import asyncio
 
 import openai
-from explainer.presentation_processing import process_presentation
-from explainer.exceptions import OpenAIError, PresentationProcessingError, SlideProcessingError
+from src.explainer.presentation_processing import process_presentation
+from src.explainer.exceptions import OpenAIError, PresentationProcessingError, SlideProcessingError
 
 
-API_KEY = "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"
+API_KEY = "API_KEY"
 UPLOADS_DIR = "../uploads"
 OUTPUTS_DIR = "../outputs"
 
