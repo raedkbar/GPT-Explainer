@@ -5,14 +5,15 @@ import openai
 import pptx
 
 
-API_KEY = "API_KEY"
+API_KEY = "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"
 PROMPT_INIT = "Explain the content of the following slide. " \
               "Write a response as if you were writing an article, and don't break the fourth wall! " \
               "Meaning, don't mention the words slide or presentation:"
+MODEL_VERSION = "gpt-3.5-turbo"
 TIMEOUT_SECONDS = 30  # Timeout value in seconds
 MAX_RETRIES = 3  # Maximum number of retries for slide processing
-UPLOADS_DIR = "./uploads"
-OUTPUTS_DIR = "./outputs"
+UPLOADS_DIR = "../uploads"
+OUTPUTS_DIR = "../outputs"
 
 
 class SlideProcessingError(Exception):
@@ -46,7 +47,7 @@ async def process_slide(slide_num, slide_text, retry_count=1):
         print(f"Processing slide {slide_num}...\n")
         prompt = f"{PROMPT_INIT}\n{slide_text}\n"
         response = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",
+            model=MODEL_VERSION,
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that explains PowerPoint slides:"},
                 {"role": "user", "content": prompt}
@@ -101,12 +102,15 @@ async def process_presentation(presentation_path):
 
         explanations = []
 
+        tasks = []
         for i, slide_text in enumerate(slides, start=1):
             if slide_text:
-                explanation = await process_slide(i, slide_text)
-            else:
-                explanation = None
+                task = asyncio.create_task(process_slide(i, slide_text))
+                tasks.append(task)
 
+        results = await asyncio.gather(*tasks)
+
+        for i, explanation in enumerate(results, start=1):
             explanations.append({"slide": i, "explanation": explanation})
 
         return explanations
