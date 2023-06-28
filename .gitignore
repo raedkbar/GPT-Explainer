@@ -3,3 +3,9 @@ venv/
 
 # Ignore .idea folder
 .idea
+
+# Ignore .pyc files
+*.pyc
+
+# Ignore .pptx files
+*.pptx
