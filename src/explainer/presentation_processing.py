@@ -9,8 +9,8 @@ from src.explainer.exceptions import PresentationProcessingError
 from src.explainer.gpt_processing import process_slide
 from src.models import Upload
 
-UPLOADS_DIR = "../uploads"
-OUTPUTS_DIR = "../outputs"
+UPLOADS_DIR = "uploads"
+OUTPUTS_DIR = "outputs"
 
 session = create_session()
 

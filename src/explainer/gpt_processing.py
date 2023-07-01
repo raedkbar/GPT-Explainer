@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import openai
 
 from src.explainer.exceptions import SlideProcessingError
@@ -6,10 +8,13 @@ API_KEY = "API_KEY"
 PROMPT_INIT = "Explain the content of the following slide. " \
               "Write a response as if you were writing an article, and don't break the fourth wall! " \
               "Meaning, don't mention the words slide or presentation:"
+SYSTEM_PROMPT = "You are a helpful assistant that explains PowerPoint slides:"
 MODEL_VERSION = "gpt-3.5-turbo"
 MAX_RETRIES = 3  # Maximum number of retries for slide processing
-UPLOADS_DIR = "../uploads"
-OUTPUTS_DIR = "../outputs"
+
+# Define the path to the database file
+UPLOADS_DIR = "uploads"
+OUTPUTS_DIR = "outputs"
 
 
 async def process_slide(slide_num, slide_text, retry_count=1):
@@ -34,7 +39,7 @@ async def process_slide(slide_num, slide_text, retry_count=1):
         response = await openai.ChatCompletion.acreate(
             model=MODEL_VERSION,
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that explains PowerPoint slides:"},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt}
             ]
         )
