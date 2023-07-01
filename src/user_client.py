@@ -109,23 +109,28 @@ async def main(file_path, email=None):
         file_path (str): The path to the PowerPoint presentation file.
         email (str, optional): The email to attach to the upload.
     """
-    async with WebAppClient("http://localhost:5000") as client:
-        uid = await client.upload(file_path, email)
-        print(f"Upload successful. UID: {uid}")
+    try:
+        async with WebAppClient("http://localhost:5000") as client:
+            uid = await client.upload(file_path, email)
+            print(f"Upload successful. UID: {uid}")
 
-        while True:
-            status_task = asyncio.create_task(client.status(uid))
-            await asyncio.sleep(1)
-            status = await status_task
+            while True:
+                status_task = asyncio.create_task(client.status(uid))
+                await asyncio.sleep(1)
+                status = await status_task
 
-            if status.is_done():
-                print("Status: Completed")
-                print(f"Filename: {status.filename}")
-                print(f"Timestamp: {status.timestamp}")
-                print(f"Explanation: {status.explanation}")
-                break
-            else:
-                print("Status: Processing")
+                if status.is_done():
+                    print("Status: Completed")
+                    print(f"Filename: {status.filename}")
+                    print(f"Timestamp: {status.timestamp}")
+                    print(f"Explanation: {status.explanation}")
+                    break
+                else:
+                    print("Status: Processing")
+
+    except aiohttp.ClientConnectorError:
+        print("Error: Cannot connect to the server. Please make sure the server is running and accessible.")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process PowerPoint presentation slides.")
