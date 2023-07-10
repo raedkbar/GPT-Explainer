@@ -32,7 +32,7 @@ async def process_slide(slide_num, slide_text, retry_count=1):
     """
     try:
         openai.api_key = API_KEY
-        print(f"Processing slide {slide_num}...\n")
+        print(f"\nProcessing slide {slide_num}...")
         prompt = f"{PROMPT_INIT}\n{slide_text}\n"
         response = await openai.ChatCompletion.acreate(
             model=MODEL_VERSION,

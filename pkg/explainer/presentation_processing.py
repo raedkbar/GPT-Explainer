@@ -48,7 +48,7 @@ async def process_presentation(upload_id):
         upload = session.get(Upload, upload_id)
 
         if upload is None:
-            print(f"Upload with ID '{upload_id}' not found")
+            print(f"\nUpload with ID '{upload_id}' not found")
             return
 
         presentation_path = f"{UPLOADS_DIR}/{upload.uid}.pptx"
@@ -70,7 +70,6 @@ async def process_presentation(upload_id):
 
         output_file = os.path.join(OUTPUTS_DIR, os.path.splitext(os.path.basename(upload.uid))[0] + ".json")
 
-        # output_file = os.path.join(OUTPUTS_DIR, f"{upload.uid}.json")
         # Save explanations to a JSON file
         with open(output_file, "w") as f:
             json.dump(explanations, f, indent=4)
@@ -80,6 +79,6 @@ async def process_presentation(upload_id):
         upload.finish_time = datetime.now()
         session.commit()
 
-        print(f"Explanations saved successfully for upload ID: {upload_id}")
+        print(f"Explanations saved successfully for upload ID: {upload_id}\n")
     except Exception as e:
         raise PresentationProcessingError(str(e)) from e
