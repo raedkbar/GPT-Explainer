@@ -120,10 +120,10 @@ async def main(file_path, email=None):
                 status = await status_task
 
                 if status.is_done():
-                    print("Status: Completed")
+                    print("\nStatus: Completed")
                     print(f"Filename: {status.filename}")
                     print(f"Timestamp: {status.timestamp}")
-                    print(f"Explanation: {status.explanation}")
+                    print(f"Explanation: \n{status.explanation}")
                     break
                 else:
                     print("Status: Processing")

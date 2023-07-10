@@ -5,12 +5,12 @@ import uuid
 from flask import Flask, request, jsonify
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from src.db_session import create_session
-from src.models import Upload, User
+from pkg.db_util.db_session import create_session
+from pkg.db_util.ORM import Upload, User
 
 app = Flask(__name__)
-UPLOADS_DIR = "./uploads"
-OUTPUTS_DIR = "./outputs"
+UPLOADS_DIR = "../uploads"
+OUTPUTS_DIR = "../outputs"
 
 # Create the upload and output directories if they don't exist
 os.makedirs(UPLOADS_DIR, exist_ok=True)

@@ -1,8 +1,8 @@
 import asyncio
 
-from db_session import create_session
-from models import Upload
-from src.explainer.presentation_processing import process_presentation
+from pkg.db_util.db_session import create_session
+from pkg.db_util.ORM import Upload
+from pkg.explainer.presentation_processing import process_presentation
 
 session = create_session()
 

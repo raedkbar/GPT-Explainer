@@ -9,10 +9,10 @@ PRESENTATION_PATH = os.path.join(BASE_DIR, "..", "2slides.pptx").replace("\\", "
 
 async def start_web_api():
     """
-    Start the Web API by running the flask_web_API.py.py script.
+    Start the Web API by running the server.py.py script.
     """
     print("Starting Web API...")
-    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "flask_web_API.py"))
+    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "server.py"))
     subprocess.Popen(["python", path], cwd=os.path.join(BASE_DIR, "..", "src"))
 
 

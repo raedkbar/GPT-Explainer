@@ -2,13 +2,13 @@ import os
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base
+from pkg.db_util.ORM import Base
 
 # Get the directory of the current module
 MODULE_DIR = Path(__file__).resolve().parent
 
 # Define the path to the database file
-DB_PATH = str(MODULE_DIR / ".." / "db" / "explainer.db")
+DB_PATH = os.path.join(MODULE_DIR, "../../db/explainer.db")
 
 
 def create_session():

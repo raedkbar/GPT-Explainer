@@ -1,10 +1,8 @@
-from pathlib import Path
-
 import openai
 
-from src.explainer.exceptions import SlideProcessingError
+from pkg.explainer.exceptions import SlideProcessingError
 
-API_KEY = "API_KEY"
+API_KEY = "API_KEY"     # TODO: Type you openai API key here.
 PROMPT_INIT = "Explain the content of the following slide. " \
               "Write a response as if you were writing an article, and don't break the fourth wall! " \
               "Meaning, don't mention the words slide or presentation:"
