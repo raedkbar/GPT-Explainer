@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+
 import aiohttp
 from datetime import datetime
 from dataclasses import dataclass
@@ -112,7 +113,10 @@ async def main(file_path, email=None):
     try:
         async with WebAppClient("http://localhost:5000") as client:
             uid = await client.upload(file_path, email)
-            print(f"Upload successful. UID: {uid}")
+            print(f"\nUpload successful. UID: {uid}")
+
+            status_message = "Status: Processing"
+            dot_count = 0
 
             while True:
                 status_task = asyncio.create_task(client.status(uid))
@@ -120,13 +124,16 @@ async def main(file_path, email=None):
                 status = await status_task
 
                 if status.is_done():
+                    print("\r" + " " * (len(status_message) + dot_count), end="\r")
                     print("\nStatus: Completed")
                     print(f"Filename: {status.filename}")
                     print(f"Timestamp: {status.timestamp}")
-                    print(f"Explanation: \n{status.explanation}")
+                    print(f"Explanation: \n{status.explanation}\n")
                     break
                 else:
-                    print("Status: Processing")
+                    dot_count = (dot_count + 1) % 4
+                    dots = "." * dot_count + " " * (3 - dot_count)
+                    print(f"\r{status_message}{dots}", end="")
 
     except aiohttp.ClientConnectorError:
         print("Error: Cannot connect to the server. Please make sure the server is running and accessible.")
