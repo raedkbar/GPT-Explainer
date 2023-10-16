@@ -9,29 +9,29 @@ PRESENTATION_PATH = os.path.join(BASE_DIR, "..", "2slides.pptx").replace("\\", "
 
 async def start_web_api():
     """
-    Start the Web API by running the flaskWebAPI.py script.
+    Start the Web API by running the server.py.py script.
     """
     print("Starting Web API...")
-    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "flaskWebAPI.py"))
+    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "server.py"))
     subprocess.Popen(["python", path], cwd=os.path.join(BASE_DIR, "..", "src"))
 
 
 async def start_explainer():
     """
-    Start the Explainer by running the gptExplainer.py script.
+    Start the Explainer by running the gpt_explainer.py script.
     """
     print("Starting Explainer...")
-    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "gptExplainer.py"))
+    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "gpt_explainer.py"))
     subprocess.Popen(["python", path], cwd=os.path.join(BASE_DIR, "..", "src"))
 
 
 async def upload_presentation(presentation_path):
     """
-    Upload the sample presentation using the userClient.py script.
+    Upload the sample presentation using the user_client.py script.
     """
     await asyncio.sleep(5)  # Delay to ensure the API has started
     print("Uploading sample presentation...")
-    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "userClient.py"))
+    path = os.path.abspath(os.path.join(BASE_DIR, "..", "src", "user_client.py"))
     subprocess.Popen(["python", path, presentation_path])
 
 
